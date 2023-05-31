@@ -1,4 +1,7 @@
 
+credentials_path = '/content/drive/My Drive/Colab Notebooks/DE_DevCos_Project2/job-posting-api-388303-8ec7283e13da.json'
+# 인증 정보 설정
+client = storage.Client.from_service_account_json(credentials_path)
 
 # ETL script
 from pytrends.request import TrendReq
