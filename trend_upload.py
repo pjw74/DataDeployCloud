@@ -16,9 +16,9 @@ df_list = []
 cnt = 0
 
 def merge_and_upload_data(df_list):
-
-    """ 전체 결과를 만들기 위한 함수 """
-
+    """
+        전체 table upload 함수
+    """
     # DataFrame 리스트를 합치기
     merged_df = pd.concat(df_list, axis=1)
     
@@ -38,13 +38,17 @@ def merge_and_upload_data(df_list):
     print("google_trend uploaded to {}.".format(destination_blob_name))
 
 def collect_data():
-
-    """ 데이터 수집 함수 """
-
+    """
+        데이터 수집 함수
+    """
+    keyword_groups = [
+        ['정보처리', '인공지능', '빅데이터', '백준', '부트캠프'],
+        ['데이터베이스', '데이터 마이닝', '클러스터링'],
+        ['데이터 엔지니어', '데이터 분석가', '데이터 사이언티스트']
+    ]
     pytrends = TrendReq(hl='ko-KR', tz=540)
     global cnt
-    kw_list = ['정보처리', '인공지능', '빅데이터', '백준', '프로그래머스'] if cnt == 0 else ['부트캠프', '데이터베이스', '데이터 마이닝', '데이터 엔지니어', '클러스터링']
-    pytrends.build_payload(kw_list, timeframe='today 5-y', geo='KR')
+    pytrends.build_payload(keyword_groups[cnt], timeframe='today 5-y', geo='KR')
     df = pytrends.interest_over_time()
     df.reset_index(inplace=True)
     df.drop(columns=['isPartial'], inplace=True)
@@ -57,9 +61,10 @@ def collect_data():
     cnt += 1
 
 if __name__ == "__main__":
-    # 두번의 데이터 수집 후 결과 저장
+    # 세번의 데이터 수집 후 결과 저장
     collect_data() # 첫 번째 데이터 수집
     time.sleep(10) # 10초 대기(pytrends 제한사항)
     collect_data() # 두 번째 데이터 수집
+    time.sleep(10) # 10초 대기(pytrends 제한사항)
+    collect_data() # 세 번째 데이터 수집
     merge_and_upload_data(df_list) # 수집한 데이터를 합치고 저장
-
