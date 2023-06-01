@@ -94,10 +94,10 @@ def set_init(url, params, filename):
     return page, last_page
 
 def upload_to_gcs(filename):
-    credentials = service_account.Credentials.from_service_account_file(env.GCS['CREDENTIAL_PATH'])
+    credentials = env.GCS['CREDENTIAL_PATH']
 
     # GCS 클라이언트 생성
-    client = storage.Client(credentials=credentials)
+    client = storage.Client.from_service_account_json(credentials)
 
     # 버킷 선택
     bucket = client.get_bucket(env.GCS['BUCKET_NAME'])
