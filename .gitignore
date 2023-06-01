@@ -3,3 +3,7 @@ env.py
 *.csv
 
 /log
+
+/recruit
+
+__pycache__/
