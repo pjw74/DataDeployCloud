@@ -6,7 +6,7 @@ import datetime
 from google.cloud import storage
 import time
 
-credentials_path = '/home/rsa-key-20230529/Github/job-posting-api-388303-8ec7283e13da.json'
+credentials_path = '/home/rsa-key-20230529/Github/job-posting-api-388303-0fa2808b9dcb.json'
 # 인증 정보 설정
 client = storage.Client.from_service_account_json(credentials_path)
 
