@@ -6,7 +6,7 @@ import datetime
 from google.cloud import storage
 import time
 
-credentials_path = '/home/rsa-key-20230529/Github/job-posting-api-388303-8ec7283e13da.json'
+credentials_path = '/home/rsa-key-20230529/Github/job-posting-api-388303-0fa2808b9dcb.json'
 # 인증 정보 설정
 client = storage.Client.from_service_account_json(credentials_path)
 
@@ -21,7 +21,7 @@ def merge_and_upload_data(df_list):
 
     # DataFrame 리스트를 합치기
     merged_df = pd.concat(df_list, axis=1)
-
+    
     # 결과 CSV 파일을 저장하기 위한 Cloud Storage 정보
     project_id = 'jop-hosting-api'
     bucket_name = 'hale-posting-bucket'
@@ -62,3 +62,4 @@ if __name__ == "__main__":
     time.sleep(10) # 10초 대기(pytrends 제한사항)
     collect_data() # 두 번째 데이터 수집
     merge_and_upload_data(df_list) # 수집한 데이터를 합치고 저장
+
