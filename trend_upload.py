@@ -58,6 +58,7 @@ def collect_data():
     # 결과 리스트에 DataFrame 추가
     df_list.append(df)
     # 검색어 리스트를 바꾼 횟수 증가
+    cnt += 1
 
 if __name__ == "__main__":
     # 세번의 데이터 수집 후 결과 저장
