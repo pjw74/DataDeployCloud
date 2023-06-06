@@ -62,11 +62,16 @@ def run():
     params['published_min'] = before
     params['published_max'] = now
     
-    pages, last_length = set_init(url, params, f"{dir}job_postings/recruit_info{filenow}")
-    
+    try:
+        pages, last_length = set_init(url, params, f"{dir}job_postings/recruit_info{filenow}")
+    except requests.exceptions.RequestException:
+        print("api 접근에 실패했습니다.")
+        send_to_slack(0, 0, 0, env.WEB_HOOK['slack'], 2)
+        return
+
     if pages == 0 and last_length == 0:
         print("새로 업로드된 채용공고가 없습니다!")
-        send_to_slack(before, now, 0)
+        send_to_slack(before, now, 0, env.WEB_HOOK['slack'], 1)
         return
     
     saves = 0
@@ -82,19 +87,30 @@ def run():
             params['count'] = last_length
         params['start'] = i
         
-        res = requests.get(url, params=params)
+        try:
+            res = requests.get(url, params=params)
+        except requests.exceptions.RequestException:
+            print("api 접근에 실패했습니다.")
+            send_to_slack(0, 0, 0, env.WEB_HOOK['slack'], 2)
+            return
+
         data_json = json.loads(res.text)
         data = data_json['jobs']['job']
         saves += len(data)
         
-        add_json(f"{dir}job_postings/recruit_info{filenow}.json", data)
-        add_csv(f"{dir}job_postings/recruit_info{filenow}.csv", data)
+        if not add_json(f"{dir}job_postings/recruit_info{filenow}.json", data):
+            send_to_slack(0, 0, f"{dir}job_postings/recruit_info{filenow}.json", env.WEB_HOOK['slack'], 4)
+            return
+        if not add_csv(f"{dir}job_postings/recruit_info{filenow}.csv", data):
+            send_to_slack(0, 0, f"{dir}job_postings/recruit_info{filenow}.csv", env.WEB_HOOK['slack'], 4)
+            return
         print("페이지 :", i, "저장 데이터 수 :", saves)
-        
-    upload_to_gcs(f"recruit_info{filenow}.json")
-    upload_to_gcs(f"recruit_info{filenow}.csv")
-
-    send_to_slack(before, now, saves, env.WEB_HOOK['slack'])
+    
+    if upload_to_gcs(f"recruit_info{filenow}.json") != 0 or upload_to_gcs(f"recruit_info{filenow}.csv") != 0:
+        send_to_slack(0, 0, 0, env.WEB_HOOK['slack'], 4)
+        return
+    
+    send_to_slack(before, now, saves, env.WEB_HOOK['slack'], 1)
     
     with open(dir+'time.txt', 'a') as f:
         f.write("\n" + now)
