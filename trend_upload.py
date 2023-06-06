@@ -95,7 +95,7 @@ def merge_and_upload_data(df_list, project_id, bucket_name):
         merged_df = pd.concat(df_list, axis=1)
         # 결과 CSV 파일을 저장하기 위한 Cloud Storage 정보
         ts = datetime.datetime.now()
-        destination_blob_name = f'google_trend/result_{ts}.csv'
+        destination_blob_name = 'google_trend/result_{}.csv'.format(ts)
         # 결과 파일을 CSV식으로 저장 (Cloud Storage 버킷에 업로드)
         merged_df.to_csv(destination_blob_name, index=False)
         upload_file_to_gcs(destination_blob_name, bucket_name, destination_blob_name)
