@@ -1,4 +1,3 @@
-from io import StringIO
 from pytrends.request import TrendReq
 import pandas as pd
 import datetime
@@ -11,7 +10,6 @@ import requests
 import json
 from pathlib import Path
 from google.cloud.exceptions import Conflict, NotFound
-from io import BytesIO
 import pytz
 from datetime import datetime
 
@@ -26,8 +24,8 @@ cnt = 0
 
 def send_slack_notification(message, num_data):
     """ Slack Incoming WebHooks를 사용하여 알림을 보내는 함수 """
-    webhook_url = 'https://hooks.slack.com/services/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'
-    slack_data = {'text': "{} ({}개 키워드 군)".format(message, num_data)}
+    webhook_url = 'https://hooks.slack.com/services/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'
+    slack_data = {'text': "{} ({}개 키워드 그룹)".format(message, num_data)}
     response = requests.post(webhook_url, data=json.dumps(slack_data), headers={'Content-Type': 'application/json'})
     if response.status_code != 200:
         raise ValueError('Slack message sending failed: %s' % response.text)
@@ -141,7 +139,7 @@ def merge_and_upload_data(df_list, project_id, bucket_name):
 
         # Slack에 알림 메시지 전송
         num_data = len(df_list)
-        # send_slack_notification("Google Trend 데이터 수집이 완료되었습니다.", num_data)
+        send_slack_notification("Google Trend 데이터 수집이 완료되었습니다.", num_data)
 
     except Exception as e:
         print(f"An error occurred while uploading to {bucket_name}")
