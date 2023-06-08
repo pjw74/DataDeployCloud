@@ -24,8 +24,10 @@ cnt = 0
 
 def send_slack_notification(message, num_data):
     """ Slack Incoming WebHooks를 사용하여 알림을 보내는 함수 """
+    with open('config.json', 'r') as f:
+        config = json.load(f)
 
-    webhook_url = 'https://hooks.slack.com/services/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'
+    webhook_url = config['SLACK_WEBHOOK_URL']
     slack_data = {'text': "{} ({}개 키워드 그룹)".format(message, num_data)}
     response = requests.post(webhook_url, data=json.dumps(slack_data), headers={'Content-Type': 'application/json'})
     if response.status_code != 200:
